@@ -1,7 +1,7 @@
 import { useOthers, useSelf } from "../../../liveblocks.config";
 import { Avatar } from "./Avatar";
 
-function Example() {
+const ActiveUser = () =>  {
   const users = useOthers();
   const currentUser = useSelf();
   const hasMoreUsers = users.length > 3;
@@ -26,3 +26,5 @@ function Example() {
     </main>
   );
 }
+
+export default ActiveUser
