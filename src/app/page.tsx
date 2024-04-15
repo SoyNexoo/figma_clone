@@ -7,8 +7,9 @@ import { CollaborativeApp } from "@/utils/CollaborativeApp";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { fabric } from 'fabric';
-import { handleCanvasMouseDown, handleResize, initializeFabric } from "@/lib/canvas";
+import { handleCanvasMouseDown, handleCanvaseMouseMove, handleResize, initializeFabric } from "@/lib/canvas";
 import { ActiveElement } from "@/types/type";
+import { useMutation, useStorage } from "../../liveblocks.config";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -21,6 +22,16 @@ export default function Home() {
     value: '',
     icon: '',
   })
+
+  const canvasObjects = useStorage((state) => state.canvasObjects)
+  const syncShapeInStorage = useMutation(({ storage }, object) => {
+    if (!object) return;
+    const { objectId } = object;
+    const shapeData = object.toJSON();
+    shapeData.objectId = objectId;
+    const canvasObjects = storage.get('canvasObjects')
+    canvasObjects.set(objectId, shapeData);
+  }, [])
 
   const handleActiveElement = (elem: ActiveElement) => {
     setActiveElement(elem);
@@ -36,6 +47,17 @@ export default function Home() {
         isDrawing,
         shapeRef,
         selectedShapeRef
+      })
+    })
+    
+    canvas.on('mouse:move', (options: any) => {
+      handleCanvaseMouseMove({
+        options,
+        canvas,
+        isDrawing,
+        shapeRef,
+        selectedShapeRef,
+        syncShapeInStorage
       })
     })
 
