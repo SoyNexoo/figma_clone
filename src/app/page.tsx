@@ -7,9 +7,10 @@ import { CollaborativeApp } from "@/utils/CollaborativeApp";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { fabric } from 'fabric';
-import { handleCanvasMouseDown, handleCanvaseMouseMove, handleResize, initializeFabric } from "@/lib/canvas";
+import { handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified, handleCanvaseMouseMove, handleResize, initializeFabric, renderCanvas } from "@/lib/canvas";
 import { ActiveElement } from "@/types/type";
 import { useMutation, useStorage } from "../../liveblocks.config";
+import { defaultNavElement } from "@/constants";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -17,6 +18,7 @@ export default function Home() {
   const isDrawing = useRef(false)
   const shapeRef = useRef<fabric.Object | null>(null)
   const selectedShapeRef = useRef<string | null>('triangle')
+  const activeObjectRef = useRef<fabric.Object | null>(null)
   const [activeElement, setActiveElement] = useState<ActiveElement>({
     name: '',
     value: '',
@@ -34,9 +36,29 @@ export default function Home() {
   }, [])
 
   const handleActiveElement = (elem: ActiveElement) => {
+    switch (elem?.value) {
+      case 'reset':
+        deleteAllShapes()
+        fabricRef.current?.clear();
+        setActiveElement(defaultNavElement)
+        break;
+
+      default:
+        break;
+    }
     setActiveElement(elem);
     selectedShapeRef.current = elem?.value as string
   }
+
+  const deleteAllShapes = useMutation(({ storage }) => {
+    const canvasObjects = storage.get('canvasObjects')
+    if (!canvasObjects || canvasObjects.size === 0) return true;
+    for (const [key, value] of canvasObjects.entries()) {
+      canvasObjects.delete(key)
+    }
+    if (canvasObjects.size === 0) return true
+
+  }, [])
 
   useEffect(() => {
     const canvas = initializeFabric({ canvasRef, fabricRef })
@@ -49,7 +71,7 @@ export default function Home() {
         selectedShapeRef
       })
     })
-    
+
     canvas.on('mouse:move', (options: any) => {
       handleCanvaseMouseMove({
         options,
@@ -61,11 +83,34 @@ export default function Home() {
       })
     })
 
+    canvas.on('mouse:up', (options: any) => {
+      handleCanvasMouseUp({
+        canvas,
+        isDrawing,
+        shapeRef,
+        selectedShapeRef,
+        syncShapeInStorage,
+        setActiveElement,
+        activeObjectRef
+      })
+    })
+
+    canvas.on('object:modified', (options: any) => {
+      handleCanvasObjectModified({
+        options,
+        syncShapeInStorage
+      })
+    })
+
     window.addEventListener('resize', () => {
       handleResize({ fabricRef })
     })
 
   }, [])
+
+  useEffect(() => {
+    renderCanvas({ canvasObjects, fabricRef, activeObjectRef })
+  }, [canvasObjects])
 
   return (
     <main className="h-screen overflow-hidden">
