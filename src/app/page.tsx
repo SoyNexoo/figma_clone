@@ -11,6 +11,7 @@ import { handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified,
 import { ActiveElement } from "@/types/type";
 import { useMutation, useStorage } from "../../liveblocks.config";
 import { defaultNavElement } from "@/constants";
+import { handleDelete } from "@/lib/key-events";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -35,21 +36,6 @@ export default function Home() {
     canvasObjects.set(objectId, shapeData);
   }, [])
 
-  const handleActiveElement = (elem: ActiveElement) => {
-    switch (elem?.value) {
-      case 'reset':
-        deleteAllShapes()
-        fabricRef.current?.clear();
-        setActiveElement(defaultNavElement)
-        break;
-
-      default:
-        break;
-    }
-    setActiveElement(elem);
-    selectedShapeRef.current = elem?.value as string
-  }
-
   const deleteAllShapes = useMutation(({ storage }) => {
     const canvasObjects = storage.get('canvasObjects')
     if (!canvasObjects || canvasObjects.size === 0) return true;
@@ -59,6 +45,31 @@ export default function Home() {
     if (canvasObjects.size === 0) return true
 
   }, [])
+
+  const deleteShapeFromStorage = useMutation(({ storage }, objectId) => {
+    const canvasObjects = storage.get('canvasObjects')
+    canvasObjects.delete(objectId)
+  }, [])
+
+  const handleActiveElement = (elem: ActiveElement) => {
+    switch (elem?.value) {
+      case 'reset':
+        deleteAllShapes()
+        fabricRef.current?.clear();
+        setActiveElement(defaultNavElement)
+        break;
+      case 'delete':
+        handleDelete(fabricRef.current as any, deleteShapeFromStorage)
+        setActiveElement(defaultNavElement);
+        break
+      default:
+        break;
+    }
+    setActiveElement(elem);   
+    selectedShapeRef.current = elem?.value as string
+  }
+
+
 
   useEffect(() => {
     const canvas = initializeFabric({ canvasRef, fabricRef })
@@ -106,6 +117,10 @@ export default function Home() {
       handleResize({ fabricRef })
     })
 
+    return () => {
+      canvas.dispose()
+    }
+
   }, [])
 
   useEffect(() => {
@@ -116,7 +131,7 @@ export default function Home() {
     <main className="h-screen overflow-hidden">
       <Navbar activeElement={activeElement} handleActiveElement={handleActiveElement} />
       <section className="flex h-full flex-row">
-        {/* <LeftSidebar /> */}
+        <LeftSidebar allShapes={Array.from(canvasObjects)} />
         <Live canvasRef={canvasRef} />
         {/* <RightSidebar /> */}
       </section>
