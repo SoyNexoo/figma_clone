@@ -7,8 +7,8 @@ import { CollaborativeApp } from "@/utils/CollaborativeApp";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { fabric } from 'fabric';
-import { handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified, handleCanvaseMouseMove, handleResize, initializeFabric, renderCanvas } from "@/lib/canvas";
-import { ActiveElement } from "@/types/type";
+import { handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified, handleCanvasSelectionCreated, handleCanvaseMouseMove, handleResize, initializeFabric, renderCanvas } from "@/lib/canvas";
+import { ActiveElement, Attributes } from "@/types/type";
 import { useMutation, useRedo, useStorage, useUndo } from "../../liveblocks.config";
 import { defaultNavElement } from "@/constants";
 import { handleDelete, handleKeyDown } from "@/lib/key-events";
@@ -24,11 +24,22 @@ export default function Home() {
   const selectedShapeRef = useRef<string | null>(null)
   const activeObjectRef = useRef<fabric.Object | null>(null)
   const imageInputRef = useRef<HTMLImageElement>(null)
+  const isEditingRef = useRef(false)
+  const [elementAttributes, setElementAttributes] = useState<Attributes>({
+    width: '',
+    height: '',
+    fontSize: '',
+    fontFamily: '',
+    fontWeight: '',
+    fill: '#aabbcc',
+    stroke: '#aabbcb'
+  })
   const [activeElement, setActiveElement] = useState<ActiveElement>({
     name: '',
     value: '',
     icon: '',
   })
+  const [activeShape, setActiveShape] = useState(false)
 
   const canvasObjects = useStorage((state) => state.canvasObjects)
   const syncShapeInStorage = useMutation(({ storage }, object) => {
@@ -124,6 +135,15 @@ export default function Home() {
       })
     })
 
+    canvas.on('selection:created', (options: any) => {
+      handleCanvasSelectionCreated({
+        options,
+        isEditingRef,
+        setElementAttributes,
+
+      })
+    })
+
     window.addEventListener('resize', () => {
       handleResize({ fabricRef })
     })
@@ -163,20 +183,27 @@ export default function Home() {
   return (
     <main className="h-screen overflow-hidden">
       <Navbar
-      activeElement={activeElement}
-      imageInputRef={imageInputRef}
-      handleImageUpload={(e: any) => {
-        e.stopPropagation(); handleImageUpload({
-          file: e.target.files[0],
-          canvas: fabricRef as any,
-          shapeRef,
-          syncShapeInStorage
-        })
-      }} handleActiveElement={handleActiveElement} />
+        activeElement={activeElement}
+        imageInputRef={imageInputRef}
+        handleImageUpload={(e: any) => {
+          e.stopPropagation(); handleImageUpload({
+            file: e.target.files[0],
+            canvas: fabricRef as any,
+            shapeRef,
+            syncShapeInStorage
+          })
+        }} handleActiveElement={handleActiveElement} />
       <section className="flex h-full flex-row">
         <LeftSidebar allShapes={Array.from(canvasObjects)} />
         <Live canvasRef={canvasRef} />
-        {/* <RightSidebar /> */}
+
+          <RightSidebar
+            elementAttributes={elementAttributes}
+            setElementAttributes={setElementAttributes}
+            fabricRef={fabricRef}
+            isEditingRef={isEditingRef}
+            syncShapeInStorage={syncShapeInStorage}
+            activeObjectRef={activeObjectRef} />
       </section>
     </main>
   );
