@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 
-export const NewThread = () => {
-  return (
-    <div>NewThread</div>
-  )
+type Props = {
+  children: ReactNode;
+};
+
+export const NewThread = ({children}: Props) => {
+  return children
 }
