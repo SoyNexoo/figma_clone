@@ -70,7 +70,7 @@ const RightSidebar = ({
           handleInputChange={handleInputChange}
         />
 
-        {/* <Export /> */}
+        <Export />
       </section>
     ),
     [elementAttributes]

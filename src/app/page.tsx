@@ -7,7 +7,7 @@ import { CollaborativeApp } from "@/utils/CollaborativeApp";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { fabric } from 'fabric';
-import { handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified, handleCanvasSelectionCreated, handleCanvaseMouseMove, handleResize, initializeFabric, renderCanvas } from "@/lib/canvas";
+import { handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified, handleCanvasObjectScaling, handleCanvasSelectionCreated, handleCanvaseMouseMove, handleResize, initializeFabric, renderCanvas } from "@/lib/canvas";
 import { ActiveElement, Attributes } from "@/types/type";
 import { useMutation, useRedo, useStorage, useUndo } from "../../liveblocks.config";
 import { defaultNavElement } from "@/constants";
@@ -39,7 +39,6 @@ export default function Home() {
     value: '',
     icon: '',
   })
-  const [activeShape, setActiveShape] = useState(false)
 
   const canvasObjects = useStorage((state) => state.canvasObjects)
   const syncShapeInStorage = useMutation(({ storage }, object) => {
@@ -141,6 +140,13 @@ export default function Home() {
         isEditingRef,
         setElementAttributes,
 
+      })
+    })
+
+    canvas.on('object:scaling', (options: any) => {
+      handleCanvasObjectScaling({
+        options,
+        setElementAttributes,
       })
     })
 
