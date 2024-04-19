@@ -2,6 +2,7 @@ import { LiveList, LiveMap, createClient } from "@liveblocks/client";
 import { createRoomContext, createLiveblocksContext } from "@liveblocks/react";
   
 const client = createClient({
+  throttle:16,
   publicApiKey: process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY!,
   async resolveUsers({ userIds }) {
     // Used only for Comments and Notifications. Return a list of user information
@@ -14,7 +15,10 @@ const client = createClient({
     //   avatar: userData.avatar.src,
     // }));
     
-    return [];
+    return userIds.map((userId) => ({
+      name: 'Anonymous',
+      avatar: `https://ui-avatars.com/api/?name=${userId}&background=random`,
+    }));
   },
   async resolveMentionSuggestions({ text }) {
     // Used only for Comments. Return a list of userIds that match `text`.
@@ -81,9 +85,11 @@ type RoomEvent = {
 // Optionally, when using Comments, ThreadMetadata represents metadata on
 // each thread. Can only contain booleans, strings, and numbers.
 export type ThreadMetadata = {
-  // resolved: boolean;
-  // quote: string;
-  // time: number;
+  resolved: boolean;
+  zIndex: number;
+  time?: number;
+  x: number;
+  y: number;
 };
 
 // Room-level hooks, use inside `RoomProvider`

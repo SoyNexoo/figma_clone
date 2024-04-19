@@ -17,7 +17,7 @@ const Live = ({canvasRef}: Props) => {
       onPointerMove={functions.handlePointerMove}
       onPointerLeave={functions.handlePointerLeave}
       onPointerDown={functions.handlePointerDown}
-      className="h-screen w-full flex justify-center items-center text-center"
+      className="h-full relative w-full flex flex-1 justify-center items-center"
     >
       <canvas ref={canvasRef}/>
       {presence.cursor && (
