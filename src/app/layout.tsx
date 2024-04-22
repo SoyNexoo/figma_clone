@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Work_Sans } from "next/font/google";
 import { Room } from "@/utils/Room";
 import "./globals.css";
-import Script from "next/script";
 
 const workSans = Work_Sans({
   subsets: ["latin"],
@@ -22,7 +21,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></Script>
       <body className={`${workSans.className} bg-primary-grey-200 text-white`}>
         <Room>
           {children}

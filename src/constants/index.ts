@@ -191,9 +191,4 @@ export const shortcuts = [
     name: "Redo",
     shortcut: "⌘ + Y",
   },
-  {
-    key: "4",
-    name: "Reactions",
-    shortcut: "E",
-  },
 ];
