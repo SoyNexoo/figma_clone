@@ -53,7 +53,7 @@ export default function Home() {
   const deleteAllShapes = useMutation(({ storage }) => {
     const canvasObjects = storage.get('canvasObjects')
     if (!canvasObjects || canvasObjects.size === 0) return true;
-    for (const [key, value] of canvasObjects.entries()) {
+    for (const [key] of canvasObjects.entries()) {
       canvasObjects.delete(key)
     }
     if (canvasObjects.size === 0) return true
@@ -157,7 +157,7 @@ export default function Home() {
     })
 
     window.addEventListener('resize', () => {
-      handleResize({ fabricRef })
+      handleResize({ canvas:fabricRef })
     })
 
     window.addEventListener('keydown', (e) => {

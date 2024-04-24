@@ -14,7 +14,7 @@ import { CursorMode, CursorState } from "@/types/type";
 import { useMyPresence, useOthers } from "../../liveblocks.config";
 
 type Props = {
-  canvasRef: React.MutableRefObject<HTMLCanvasElement> | null;
+  canvasRef: React.MutableRefObject<HTMLCanvasElement> | any;
   undo: () => void;
   redo: () => void;
 };

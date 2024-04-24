@@ -382,7 +382,7 @@ export const renderCanvas = ({
 };
 
 // resize canvas dimensions on window resize
-export const handleResize = ({ canvas }: { canvas: fabric.Canvas | null }) => {
+export const handleResize = ({ canvas }: { canvas: any }) => {
   const canvasElement = document.getElementById("canvas");
   if (!canvasElement) return;
 

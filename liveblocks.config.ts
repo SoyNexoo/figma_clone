@@ -63,7 +63,7 @@ export type Presence = {
 type Storage = {
   // author: LiveObject<{ firstName: string, lastName: string }>,
   // ...
-  canvasObjects: LiveMap<string, any> 
+  canvasObjects: LiveMap<string, any> | any
 };
 
 // Optionally, UserMeta represents static/readonly metadata on each user, as

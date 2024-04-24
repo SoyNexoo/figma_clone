@@ -101,7 +101,7 @@ export type RightSidebarProps = {
 
 export type NavbarProps = {
   activeElement: ActiveElement;
-  imageInputRef: React.MutableRefObject<HTMLInputElement | null>;
+  imageInputRef: React.MutableRefObject<HTMLInputElement | any>;
   handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleActiveElement: (element: ActiveElement) => void;
 };
