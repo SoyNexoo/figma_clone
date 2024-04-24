@@ -117,7 +117,7 @@ const Live = ({ canvasRef, undo, redo}: Props) => {
             updateMyPresence={updateMyPresence}
           />
         )}
-        <LiveCursors others={others} />
+        <LiveCursors/>
         <Comments />
       </ContextMenuTrigger>
       <ContextMenuContent className="right-menu-content">
