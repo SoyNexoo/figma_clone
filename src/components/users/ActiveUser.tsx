@@ -13,12 +13,12 @@ const ActiveUser = () => {
       <div className="flex pl-3">
         {currentUser && (
           <div className="relative ml-8 first:ml-0">
-            <Avatar otherStyles={'border-[3px] border-primary-green'} name="You" />
+            <Avatar otherStyle={'border-[3px] border-primary-green'} name="You" />
           </div>
         )}
         {users.slice(0, 3).map(({ connectionId }: any) => {
           return (
-            <Avatar key={connectionId} name={generateRandomName()} otherStyles='-ml-3' />
+            <Avatar key={connectionId} name={generateRandomName()} otherStyle='-ml-3' />
           );
         })}
 
